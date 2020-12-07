@@ -14,17 +14,25 @@ public class ListValueOnSubscribe<T> implements FlowableOnSubscribe<T> {
 
     private Query mQuery;
     private Function<DataSnapshot, T> mMarshaller;
+    private final boolean mEnableRealTimeListener;
 
 
-    public ListValueOnSubscribe(Query query, Function<DataSnapshot, T> marshaller) {
+    public ListValueOnSubscribe(Query query, Function<DataSnapshot, T> marshaller,
+                                boolean enableRealTimeListener) {
         mQuery = query;
         mMarshaller = marshaller;
+        mEnableRealTimeListener = enableRealTimeListener;
+
     }
 
     @Override
     public void subscribe(FlowableEmitter<T> e) throws Exception {
         ValueEventListener listener = new RxSingleValueListener<>(e, mMarshaller);
         e.setCancellable(() -> mQuery.removeEventListener(listener));
+
+        if (mEnableRealTimeListener) {
+            mQuery.addValueEventListener(listener);
+        }
         mQuery.addListenerForSingleValueEvent(listener);
     }
 
@@ -43,7 +51,7 @@ public class ListValueOnSubscribe<T> implements FlowableOnSubscribe<T> {
         public void onDataChange(DataSnapshot dataSnapshot) {
 
             try {
-                if(null != marshaller.apply(dataSnapshot))
+                if (null != marshaller.apply(dataSnapshot))
                     subscriber.onNext(marshaller.apply(dataSnapshot));
             } catch (Exception e) {
                 subscriber.onError(e);

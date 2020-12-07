@@ -1,13 +1,6 @@
 package br.com.autodoc.rxfirebox;
 
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
