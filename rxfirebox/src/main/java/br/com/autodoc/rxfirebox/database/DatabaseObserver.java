@@ -20,7 +20,7 @@ public class DatabaseObserver {
         useListener = false;
     }
 
-    public DatabaseObserver(boolean useListener, boolean enableRealTimeListener) {
+    public DatabaseObserver(boolean useListener) {
         this.useListener = useListener;
     }
 
@@ -44,8 +44,20 @@ public class DatabaseObserver {
      * @param <T> Type of the return
      * @return return type converted in marshaller
      */
-    public <T> Flowable<T> list(Query query, Function<DataSnapshot, T> marshaller, boolean enableRealTimeListener) {
-        return Flowable.create(new ListValueOnSubscribe<>(query, marshaller, enableRealTimeListener), BackpressureStrategy.BUFFER);
+    public <T> Maybe<T> listMaybe(Query query, Function<DataSnapshot, T> marshaller, boolean enableRealTimeListener) {
+        return Maybe.create(new ListMaybeValueOnSubscribe<>(query, marshaller, enableRealTimeListener));
+    }
+
+    /**
+     * Run the query and not cancel the listener
+     *
+     * @param query firebase query
+     * @param marshaller function to convert data
+     * @param <T> Type of the return
+     * @return return type converted in marshaller
+     */
+    public <T> Flowable<T> list(Query query, Function<DataSnapshot, T> marshaller) {
+        return Flowable.create(new ListValueOnSubscribe<>(query, marshaller), BackpressureStrategy.BUFFER);
     }
 
     /**
@@ -59,6 +71,7 @@ public class DatabaseObserver {
     public <T> Flowable<T> listChanges(Query query, Function<DataSnapshot, T> marshaller) {
         return Flowable.create(new ListValueChangesOnSubscribe<>(query, marshaller), BackpressureStrategy.BUFFER);
     }
+
 
     /**
      * Create value in database

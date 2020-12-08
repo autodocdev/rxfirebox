@@ -1,7 +1,6 @@
 package br.com.autodoc.rxfirebox.database;
 
-
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -9,17 +8,16 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.Map;
 
-import io.reactivex.Completable;
 import io.reactivex.CompletableEmitter;
 import io.reactivex.CompletableOnSubscribe;
 
 public class UpdateValueOnSubscriber<T> implements CompletableOnSubscribe {
 
-    private final Map<String, T>  value;
+    private final Map<String, T> value;
     private final DatabaseReference databaseReference;
     private final boolean useListener;
 
-    public UpdateValueOnSubscriber(Map<String, T> value, DatabaseReference databaseReference,boolean useListener) {
+    public UpdateValueOnSubscriber(Map<String, T> value, DatabaseReference databaseReference, boolean useListener) {
         this.value = value;
         this.databaseReference = databaseReference;
         this.useListener = useListener;
@@ -27,9 +25,9 @@ public class UpdateValueOnSubscriber<T> implements CompletableOnSubscribe {
 
     @Override
     public void subscribe(CompletableEmitter e) throws Exception {
-        if(useListener) {
+        if (useListener) {
             databaseReference.setValue(value).addOnCompleteListener(new RxCompletionListener(e));
-        }else{
+        } else {
             databaseReference.updateChildren((Map<String, Object>) value);
             e.onComplete();
         }
@@ -45,12 +43,12 @@ public class UpdateValueOnSubscriber<T> implements CompletableOnSubscribe {
 
         @Override
         public void onComplete(@NonNull Task<Void> task) {
-            if(task.getException() != null){
+            if (task.getException() != null) {
                 subscriber.onError(task.getException());
-            }else {
+            } else {
                 subscriber.onComplete();
             }
         }
     }
-    
+
 }
